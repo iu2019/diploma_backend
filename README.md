@@ -1,4 +1,4 @@
-sprint_15
+# diploma_backend
 
 IPv4: 130.193.44.217
 URL: https://www.iusprint15.students.nomoreparties.co, 
