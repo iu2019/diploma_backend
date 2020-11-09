@@ -1,38 +1,27 @@
-/* eslint-disable no-console */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const ServerError = require('../errors/server-err');
 const RequestError = require('../errors/request-err');
 const NotFoundError = require('../errors/not-found-err');
 const DuplicateError = require('../errors/duplicate-err');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const readUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => {
-      // if (!user) {
-      //   throw new ServerError('На сервере произошла ошибка');
-      // }
-      res.send({ data: users });
-    })
-    .catch(next);
-};
+const readUser = (req, res, next) => {
 
-const readUserById = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.user._id)
     .orFail(() => {
-      throw new NotFoundError('Нет пользователя с таким id');
+      throw new NotFoundError('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch(next);
 };
 
 const createUser = (req, res, next) => {
   const {
-    name, about, avatar, email, password,
+    email, password, name,
   } = req.body;
+
   if (
     password.length < 8
     || password.split('').every(
@@ -45,43 +34,20 @@ const createUser = (req, res, next) => {
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
+      email, password: hash, name,
     }))
     .then((user) => res.status(201).send({
       data: {
-        name: user.name, about: user.about, avatar: user.avatar, email: user.email,
+        email: user.email, name: user.name,
       },
     }))
     .catch((err) => {
-      // let error;
       if (err.name === 'MongoError' && err.code === 11000) {
         next(new DuplicateError('Повторный email'));
       } else {
         next(new RequestError('Ошибка валидации полей пользователя'));
       }
     });
-};
-
-const updateUser = (req, res, next) => {
-  const { name, about } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { name, about })
-    .orFail(() => {
-      throw new ServerError('Ошибка сервера - обновление не удалось сохранить');
-    })
-    .then(() => res.status(200).send({ data: { name, about } }))
-    .catch(next);
-};
-
-const updateUserAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { avatar })
-    .orFail(() => {
-      throw new ServerError('Ошибка сервера - обновление не удалось сохранить');
-    })
-    .then(() => res.status(200).send({ data: { avatar } }))
-    .catch(next);
 };
 
 const login = (req, res, next) => {
@@ -104,5 +70,5 @@ const login = (req, res, next) => {
 };
 
 module.exports = {
-  readUsers, readUserById, createUser, updateUser, updateUserAvatar, login,
+  readUser, createUser, login,
 };

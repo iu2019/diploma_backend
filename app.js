@@ -13,9 +13,9 @@ const helmet = require('helmet');
 
 const auth = require('./middlewares/auth');
 
-const readUsers = require('./routes/users');
-const readCards = require('./routes/cards');
-const { login, createUser } = require('./controllers/users');
+const usersRoutes = require('./routes/users');
+const articlesRoutes = require('./routes/articles');
+const { createUser, login } = require('./controllers/users');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
@@ -43,7 +43,7 @@ app.get('/crash-test', () => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://localhost:27017/newsdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -62,19 +62,17 @@ app.post('/signin',
 app.post('/signup',
   celebrate({
     body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().required().min(2).max(30),
-      avatar: Joi.string().required().pattern(urlPattern),
       email: Joi.string().required().email(),
       password: Joi.string().required().min(8),
+      name: Joi.string().required().min(2).max(30),
     }),
   }),
   createUser);
 
 app.use(auth);
 
-app.use('/users', readUsers);
-app.use('/cards', readCards);
+app.use('/users', usersRoutes);
+app.use('/articles', articlesRoutes);
 
 app.use(errorLogger); // подключаем логгер ошибок
 

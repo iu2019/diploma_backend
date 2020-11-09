@@ -1,13 +1,12 @@
 {
-  "name": "sprint_15",
+  "name": "diploma_backend",
   "author": "IU",
   "version": "1.0.0",
-  "description": "Mesto project Sprint 15",
+  "description": "Yandex Praktikum Diploma Backend",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "start": "node app.js",
-    "test": "jest"
+    "start": "node app.js"
   },
   "keywords": [],
   "license": "ISC",
