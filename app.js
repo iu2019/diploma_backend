@@ -17,14 +17,14 @@ const { createUser, login } = require('./controllers/users');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, URI = 'mongodb://localhost: 27017/newsdb' } = process.env;
 const app = express();
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
 
-const RequestError = require('./errors/request-err');
+const NotFoundError = require('./errors/not-found-err');
 
 app.use(apiLimiter);
 app.use(helmet());
@@ -41,7 +41,7 @@ app.get('/crash-test', () => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/newsdb', {
+mongoose.connect(URI, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -71,11 +71,11 @@ app.use(auth);
 
 app.use('/api', router);
 
-app.use(errorLogger); // подключаем логгер ошибок
-
 app.use('*', () => {
-  throw new RequestError('Ошибка в формате запроса');
+  throw new NotFoundError('Ресурс не найден');
 });
+
+app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors()); // обработчик ошибок celebrate
 
