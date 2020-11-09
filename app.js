@@ -80,7 +80,6 @@ app.use('*', () => {
 
 app.use(errors()); // обработчик ошибок celebrate
 
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => { // Централизованный обработчик ошибок.
   const { statusCode = 500, message } = err;
 
@@ -90,6 +89,7 @@ app.use((err, req, res, next) => { // Централизованный обра�
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });
 
 app.listen(PORT, () => {
