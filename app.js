@@ -92,5 +92,5 @@ app.use((err, req, res, next) => { // Централизованный обра�
 });
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+  // console.log(`App listening on port ${PORT}`);
 });
