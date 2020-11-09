@@ -8,7 +8,6 @@ const DuplicateError = require('../errors/duplicate-err');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const readUser = (req, res, next) => {
-
   User.findById(req.user._id)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден');

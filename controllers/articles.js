@@ -16,10 +16,14 @@ const readArticles = (req, res, next) => {
 };
 
 const createArticle = (req, res, next) => {
-  const { keyword, title, text, date, source, link, image } = req.body;
+  const {
+    keyword, title, text, date, source, link, image,
+  } = req.body;
   const id = req.user._id;
 
-  Article.create({ keyword, title, text, date, source, link, image, owner: id })
+  Article.create({
+    keyword, title, text, date, source, link, image, owner: id,
+  })
     .then((article) => {
       res.status(201).send({ data: article });
     })
