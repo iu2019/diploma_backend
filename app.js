@@ -11,8 +11,8 @@ const helmet = require('helmet');
 
 const auth = require('./middlewares/auth');
 
-const usersRoutes = require('./routes/users');
-const articlesRoutes = require('./routes/articles');
+const router = require('./routes/index');
+
 const { createUser, login } = require('./controllers/users');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -49,7 +49,7 @@ mongoose.connect('mongodb://localhost:27017/newsdb', {
 });
 mongoose.set('runValidators', true);
 
-app.post('/signin',
+app.post('/api/signin',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -57,7 +57,7 @@ app.post('/signin',
     }),
   }), login);
 
-app.post('/signup',
+app.post('/api/signup',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -69,8 +69,7 @@ app.post('/signup',
 
 app.use(auth);
 
-app.use('/users', usersRoutes);
-app.use('/articles', articlesRoutes);
+app.use('/api', router);
 
 app.use(errorLogger); // подключаем логгер ошибок
 
@@ -93,6 +92,5 @@ app.use((err, req, res, next) => { // Централизованный обра�
 });
 
 app.listen(PORT, () => {
-
-  // console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`);
 });
