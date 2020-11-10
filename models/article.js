@@ -23,7 +23,6 @@ const articleSchema = new mongoose.Schema({
   date: {
     type: String,
     minlength: 8,
-    maxlength: 20,
     required: true,
   },
   source: {
