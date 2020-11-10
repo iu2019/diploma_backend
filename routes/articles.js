@@ -1,11 +1,10 @@
 const articlesRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { default: validator } = require('validator');
 
 const {
   readArticles, createArticle, deleteArticle,
 } = require('../controllers/articles');
-
-const urlPattern = new RegExp(/^http[s]?:\/\/((([\w-]+\.)*\w{2,3})|((([1-9][0-9]{0,1}|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([1-9][0-9]{0,1}|1[0-9]{2}|2[0-4][0-9]|25[0-5])))(:[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]{1}|6553[0-5])?((\/[\w-]+)*\/?#?)$/);
 
 articlesRouter.get('/', readArticles);
 
@@ -17,8 +16,18 @@ articlesRouter.post('/',
       text: Joi.string().required().min(2).max(1000),
       date: Joi.string().required().min(8),
       source: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().pattern(urlPattern),
-      image: Joi.string().required().pattern(urlPattern),
+      link: Joi.string().required().custom((value, helpers) => {
+        if (validator.isURL(value, { require_host: true })) {
+          return value;
+        }
+        return helpers.message('Поле link не является валидным URL');
+      }),
+      image: Joi.string().required().custom((value, helpers) => {
+        if (validator.isURL(value, { equire_host: true })) {
+          return value;
+        }
+        return helpers.message('Поле image не является валидным URL');
+      }),
     }),
   }),
   createArticle);
