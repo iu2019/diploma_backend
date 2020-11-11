@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const NotFoundError = require('../errors/not-found-err');
+const emailValMsg = require('../config/const');
 
 const userSchema = new mongoose.Schema({
 
@@ -10,7 +11,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: (value) => validator.isEmail(value, {
-      message: 'Must be a valid email',
+      message: emailValMsg,
     }),
   },
   password: {

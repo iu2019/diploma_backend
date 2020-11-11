@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
+const urlValMsg = require('../config/const');
+
 const articleSchema = new mongoose.Schema({
   keyword: {
     type: String,
@@ -33,10 +35,10 @@ const articleSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    required: [true, 'Здесь нужна ссылка'],
+    required: [true, urlValMsg],
     validate: (value) => validator.isURL(value, {
 
-      message: 'Must be a Valid URL',
+      message: urlValMsg,
       protocols: ['http', 'https', 'ftp'],
       require_tld: true,
       require_protocol: true,
@@ -44,10 +46,10 @@ const articleSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, 'Здесь нужна ссылка'],
+    required: [true, urlValMsg],
     validate: (value) => validator.isURL(value, {
 
-      message: 'Must be a Valid URL',
+      message: urlValMsg,
       protocols: ['http', 'https', 'ftp'],
       require_tld: true,
       require_protocol: true,

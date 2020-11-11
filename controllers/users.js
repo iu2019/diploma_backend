@@ -4,13 +4,17 @@ const User = require('../models/user');
 const RequestError = require('../errors/request-err');
 const NotFoundError = require('../errors/not-found-err');
 const DuplicateError = require('../errors/duplicate-err');
+const jwtKey = require('../config/jwt-key');
+const {
+  userNotFoundMsg, pwdFormatMsg, duplicateEmailMsg, requestErrMsg, successfulLoginMsg,
+} = require('../config/const');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const readUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw new NotFoundError('Пользователь не найден');
+      throw new NotFoundError(userNotFoundMsg);
     })
     .then((user) => res.status(200).send({ data: user }))
     .catch(next);
@@ -27,7 +31,7 @@ const createUser = (req, res, next) => {
       (elem, index, array) => elem === array[0],
     )
   ) {
-    next(new RequestError('Пароль не соответствует требованиям'));
+    next(new RequestError(pwdFormatMsg));
     return;
   }
 
@@ -42,9 +46,9 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        next(new DuplicateError('Повторный email'));
+        next(new DuplicateError(duplicateEmailMsg));
       } else {
-        next(new RequestError('Ошибка валидации полей пользователя'));
+        next(new RequestError(requestErrMsg));
       }
     });
 };
@@ -55,7 +59,7 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user.id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-super-duper-secret',
+        NODE_ENV === 'production' ? JWT_SECRET : jwtKey,
         { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
@@ -63,7 +67,7 @@ const login = (req, res, next) => {
         sameSite: true,
       })
         .status(200)
-        .send({ message: 'Удачный логин' });
+        .send({ message: successfulLoginMsg });
     })
     .catch(next);
 };

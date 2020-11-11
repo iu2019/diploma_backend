@@ -21,6 +21,4 @@ signRouter.post('/api/signup',
   }),
   createUser);
 
-// signRouter.use(errors());
-
 module.exports = signRouter;

@@ -6,7 +6,9 @@ require('dotenv').config();
 const apiLimiter = require('./routes/rate-limiter');
 const router = require('./routes/index');
 
-const { PORT = 3000, MONGODB = 27017 } = process.env;
+const mongodbPort = require('./config/mongodb');
+
+const { PORT = 3000, MONGODB = mongodbPort } = process.env;
 const app = express();
 
 app.use(apiLimiter);

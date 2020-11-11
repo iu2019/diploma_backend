@@ -1,6 +1,7 @@
 const articlesRouter = require('express').Router();
 const { celebrate, Joi, errors } = require('celebrate');
 const { default: validator } = require('validator');
+const { linkValMsg, imageValMsg } = require('../config/const');
 
 const {
   readArticles, createArticle, deleteArticle,
@@ -20,13 +21,13 @@ articlesRouter.post('/',
         if (validator.isURL(value, { require_host: true })) {
           return value;
         }
-        return helpers.message('Поле link не является валидным URL');
+        return helpers.message(linkValMsg);
       }),
       image: Joi.string().required().custom((value, helpers) => {
         if (validator.isURL(value, { equire_host: true })) {
           return value;
         }
-        return helpers.message('Поле image не является валидным URL');
+        return helpers.message(imageValMsg);
       }),
     }),
   }),
