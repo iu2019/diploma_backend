@@ -1,5 +1,5 @@
 const signRouter = require('express').Router();
-const { celebrate, Joi, errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 
 const { createUser, login } = require('../controllers/users');
 
@@ -21,6 +21,6 @@ signRouter.post('/api/signup',
   }),
   createUser);
 
-signRouter.use(errors());
+// signRouter.use(errors());
 
 module.exports = signRouter;

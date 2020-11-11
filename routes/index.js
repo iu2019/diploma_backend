@@ -20,21 +20,22 @@ router.use(helmet());
 router.use(logger.requestLogger);
 router.use(cookieParser());
 router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
+
 router.use((error, req, res, next) => {
   // Catch bodyParser error
   if (error.message === 'invalid json') {
     next(new RequestError('Неверное тело запроса'));
   } else {
-    next();
+    next(error);
   }
 });
-router.use(bodyParser.urlencoded({ extended: true }));
 
 router.use(signRouter);
 router.use(auth);
 router.use('/api/users', usersRouter);
 router.use('/api/articles', articlesRouter);
 
-router.use(errorRouter);
+router.use(errorRouter)();
 
 module.exports = router;
